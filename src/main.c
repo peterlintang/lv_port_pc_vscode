@@ -88,6 +88,7 @@ static char nearest_course_path[256];
 static int greens_num = 1;
 static int hole_select = -1;
 static struct gps_point current;
+static struct gps_point s_g_center;
 static int course_debug = 1;
 
 #define MY_WIDTH	800
@@ -523,6 +524,8 @@ static void draw_fcb(char *course, int h_id)
 		{
 			centers[0].x = point.x;
 			centers[0].y = point.y;
+			s_g_center.x = point.x;
+			s_g_center.y = point.y;
 		}
 		else if ((strncmp(pl_type, "gR", 2) == 0) || (strncmp(pl_type, "gL", 2) == 0))
 		{
@@ -647,6 +650,38 @@ if (course_debug)
     printf("ref y: %.8f, %.8f, %.8f\n", ref_min.y, ref_max.y, ref_max.y - ref_min.y);
 }
 
+static void rotate_canvas(int degree)
+{
+LV_DRAW_BUF_DEFINE_STATIC(draw_buf_32bpp, MY_WIDTH, MY_HEIGHT, LV_COLOR_FORMAT_ARGB8888);
+LV_DRAW_BUF_INIT_STATIC(draw_buf_32bpp);
+    static lv_obj_t * canvas2 = NULL;
+    if (canvas2)
+    {
+	    lv_obj_del(canvas2);
+	    canvas2 = NULL;
+    }
+    canvas2 = lv_canvas_create(obj);
+    lv_canvas_set_draw_buf(canvas2, &draw_buf_32bpp);
+    lv_canvas_fill_bg(canvas2, lv_palette_main(LV_PALETTE_NONE), LV_OPA_COVER);
+    lv_obj_center(canvas2);
+
+    lv_layer_t layer;
+    lv_canvas_init_layer(canvas2, &layer);
+    lv_image_dsc_t *img = lv_canvas_get_image(canvas);
+    lv_draw_image_dsc_t img_dsc;
+    lv_draw_image_dsc_init(&img_dsc);
+    img_dsc.rotation = degree;
+    img_dsc.scale_x = 226 ;
+    img_dsc.scale_y = 226 ;
+    img_dsc.src = img;
+    img_dsc.pivot.x = MY_WIDTH / 2;
+    img_dsc.pivot.y = MY_HEIGHT	/ 2;
+
+    lv_area_t coords_img = {0, 0, MY_WIDTH - 1, MY_HEIGHT - 1};
+    lv_draw_image(&layer, &img_dsc, &coords_img);
+
+    lv_canvas_finish_layer(canvas2, &layer);
+}
 
 static void my_timer_cb(lv_timer_t *arg)
 {
@@ -660,6 +695,8 @@ if (course_debug)
         lv_canvas_fill_bg(canvas, lv_palette_main(LV_PALETTE_NONE), LV_OPA_COVER);
         draw_hole(nearest_course_path, hole_select);
 	draw_fcb(nearest_course_path, hole_select);
+	double degree = atan2(current.y - s_g_center.y, current.x - s_g_center.x) * 360 / (2 * M_PI);
+	rotate_canvas(degree * 10 + 90 * 10);
     }
 }
 
