@@ -118,6 +118,7 @@ static int s_green_fcb(struct gps_point *green, int pts_num,
 				&green[(i) % pts_num],
 				&green[(i + 1) % pts_num],
 				&out[out_index]);
+		//printf("pts_num: %d, ret: %d\n", i, ret);
 		if (ret)
 		{
 			out_index++;
@@ -158,6 +159,35 @@ static int s_green_fcb(struct gps_point *green, int pts_num,
 }
 
 
+static int InsidePolygon4( struct gps_point *polygon, int N, struct gps_point *pp )
+{
+    int i,j;
+    int inside = 0;
+    int count1 = 0;
+    int count2 = 0;
+
+    struct gps_point p;
+
+    p.x = pp->x;
+    p.y = pp->y;
+
+    for (i = 0,j = N - 1;i < N;j = i++)
+    {
+        double value = (p.x - polygon[j].x) * (polygon[i].y - polygon[j].y) - (p.y - polygon[j].y) * (polygon[i].x - polygon[j].x);
+        if (value > 0)
+            ++count1;
+        else if (value < 0)
+            ++count2;
+    }
+
+    if (0 == count1 ||
+        0 == count2)
+    {
+        inside = 1;
+    }
+    return inside;
+}
+
 /*
  *	get the fcb for green 
  *	@green:		(in)green points
@@ -181,6 +211,19 @@ int green_fcb(struct gps_point *green, int pts_num,
 	int ret = 0;
 	struct gps_point f_point = { 0.0, 0.0 };
 	struct gps_point b_point = { 0.0, 0.0 };
+
+	/*
+	double distance = 0.0;
+	distance = calc_2gpspoints_distance(current, center);
+	if (distance < 1e-4)
+	{
+		return -2;
+	}
+	*/
+	if (InsidePolygon4(green, pts_num, current))
+	{
+		return -2;
+	}
 
 	ret = s_green_fcb(green, pts_num, current, center, &f_point, &b_point, f, b);
 	if (ret == 0)

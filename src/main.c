@@ -552,6 +552,11 @@ static void draw_fcb(char *course, int h_id)
 		points = (struct gps_point *)calloc(points_num, sizeof(struct gps_point));
 		course_get_gPts_arrayItemInfo_by_index(course, h_id, i, points, points_num); 
 
+		for (int k = 0; k < points_num; k++)
+		{
+			printf("%.8f %.8f\n", points[k].y, points[k].x);
+		}
+
 		int ret = green_fcb(points, points_num, 
 				&current, 
 				&centers[i], 
@@ -560,8 +565,8 @@ static void draw_fcb(char *course, int h_id)
 				&f, &c, &b);
 		if (ret != 0)
 		{
-			printf("course: %s, hole: %d, green: %d, current: (%.8f %.8f) fcb failed\n",
-					course, h_id, i, current.y, current.x);
+			printf("course: %s, hole: %d, green: %d, current: (%.8f %.8f) fcb failed ret: %d\n",
+					course, h_id, i, current.y, current.x, ret);
 		}
 		else
 		{
