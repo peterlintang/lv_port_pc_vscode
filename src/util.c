@@ -159,7 +159,7 @@ static int s_green_fcb(struct gps_point *green, int pts_num,
 }
 
 
-static int InsidePolygon4( struct gps_point *polygon, int N, struct gps_point *pp )
+static int isInsidePolygon( struct gps_point *polygon, int N, struct gps_point *pp )
 {
     int i,j;
     int inside = 0;
@@ -220,7 +220,7 @@ int green_fcb(struct gps_point *green, int pts_num,
 		return -2;
 	}
 	*/
-	if (InsidePolygon4(green, pts_num, current))
+	if (isInsidePolygon(green, pts_num, current))
 	{
 		return -2;
 	}
