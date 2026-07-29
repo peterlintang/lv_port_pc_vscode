@@ -78,11 +78,19 @@ if(USE_FREERTOS)
     list(APPEND MAIN_LIBS freertos_config freertos_kernel)
 else()
     list(APPEND MAIN_SOURCES src/main.c)
+    list(APPEND MAIN_SOURCES src/util.c)
+    list(APPEND MAIN_SOURCES src/tPts_info.c)
+    list(APPEND MAIN_SOURCES src/teebox_info.c)
+    list(APPEND MAIN_SOURCES src/pl_info.c)
+    list(APPEND MAIN_SOURCES src/hole_info.c)
+    list(APPEND MAIN_SOURCES src/gPts_info.c)
+    list(APPEND MAIN_SOURCES src/get_course_hole.c)
+    list(APPEND MAIN_SOURCES src/course_info.c)
 endif()
 
 
 if(NOT MSVC)
-    list(APPEND MAIN_LIBS m pthread)
+    list(APPEND MAIN_LIBS m pthread cjson)
 endif()
 
 # Custom target to run the executable
