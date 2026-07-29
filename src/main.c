@@ -648,7 +648,7 @@ if (course_debug)
 }
 
 
-void my_timer_cb(lv_timer_t *arg)
+static void my_timer_cb(lv_timer_t *arg)
 {
     if (refresh != 0)
     {
