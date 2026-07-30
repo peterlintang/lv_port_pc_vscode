@@ -458,6 +458,7 @@ static void lvgl_draw_fcb(struct gps_point *f_point, double *f,
 	    dsc.p2.y = to_y(points[i].y);
 	    lv_draw_line(&layer, &dsc);
 	    lv_canvas_finish_layer(canvas, &layer);
+#if 1
 	    {
 		char text[64] = { 0 };
 		snprintf(text, 64, "%.2f", distances[i]);
@@ -468,6 +469,10 @@ static void lvgl_draw_fcb(struct gps_point *f_point, double *f,
 		lv_draw_letter_dsc_init(&letter_dsc);
 		letter_dsc.color = lv_color_hex(0xaabc00);
 		letter_dsc.font = lv_font_get_default();
+		/*
+		double degree = atan2(current.y - s_g_center.y, current.x - s_g_center.x) * 360 / (2 * M_PI);
+		letter_dsc.rotation = -(degree * 10 + 90 * 10);
+		*/
 
 		int16_t len = strlen(text);
     if (course_debug) 
@@ -498,6 +503,7 @@ static void lvgl_draw_fcb(struct gps_point *f_point, double *f,
 		}
 		lv_canvas_finish_layer(canvas, &layer);
 	    }
+#endif
     }
 }
 
